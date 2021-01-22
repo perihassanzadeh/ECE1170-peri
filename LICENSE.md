@@ -1,4 +1,4 @@
-   This source code is from the book 
+   This source code is from the book  
      "Flexible, Reliable Software:Using Patterns and Agile Development," published 2010 by CRC Press.
      Author: Henrik B Christensen, Department of Computer Science, Aarhus University
    
