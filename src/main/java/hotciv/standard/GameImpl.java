@@ -2,6 +2,10 @@ package hotciv.standard;
 
 import hotciv.framework.*;
 
+import java.util.HashMap;
+
+import java.lang.Math;
+
 /** Skeleton implementation of HotCiv.
  
    This source code is from the book 
@@ -30,17 +34,155 @@ import hotciv.framework.*;
 */
 
 public class GameImpl implements Game {
-  public Tile getTileAt( Position p ) { return null; }
-  public Unit getUnitAt( Position p ) { return null; }
-  public City getCityAt( Position p ) { return null; }
-  public Player getPlayerInTurn() { return null; }
-  public Player getWinner() { return null; }
-  public int getAge() { return 0; }
-  public boolean moveUnit( Position from, Position to ) {
-    return false;
+
+  boolean redTurn;
+  int age;
+  HashMap<Position, Tile> boardTiles = new HashMap<>();
+  HashMap<Position, Unit> unitTiles = new HashMap<>();
+
+  public GameImpl()
+  {
+    redTurn = true;
+    age = -4000;
+
+    for(int i = 0; i<GameConstants.WORLDSIZE; i++)
+    {
+      for(int j=0; j<GameConstants.WORLDSIZE; j++)
+      {
+        Position p = new Position(i,j);
+
+        if(i==1 && j==0)
+        {
+          String type = GameConstants.OCEANS;
+          Tile t = new TileImpl(type);
+          boardTiles.put(p,t);
+        }
+        else if(i==0 && j==1)
+        {
+          String type = GameConstants.HILLS;
+          Tile t = new TileImpl(type);
+          boardTiles.put(p,t);
+        }
+        else if(i==2 && j==2)
+        {
+          String type = GameConstants.MOUNTAINS;
+          Tile t = new TileImpl(type);
+          boardTiles.put(p,t);
+        }
+        else
+        {
+          String type = GameConstants.PLAINS;
+          Tile t = new TileImpl(type);
+          boardTiles.put(p, t);
+        }
+
+      }
+    }
   }
-  public void endOfTurn() {}
-  public void changeWorkForceFocusInCityAt( Position p, String balance ) {}
-  public void changeProductionInCityAt( Position p, String unitType ) {}
-  public void performUnitActionAt( Position p ) {}
+
+  public Tile getTileAt( Position p )
+  {
+    return boardTiles.get(p);
+  }
+
+  public Unit getUnitAt( Position p )
+  {
+    return unitTiles.get(p);
+  }
+
+  public City getCityAt( Position p )
+  {
+    return null;
+  }
+
+  public Player getPlayerInTurn()
+  {
+    if(redTurn == true)
+    {
+      return Player.RED;
+    }
+    else if(redTurn == false)
+    {
+      return Player.BLUE;
+    }
+    else
+    {
+      return null;
+    }
+
+  }
+
+  public Player getWinner()
+  {
+    if(getAge()==3000 && getPlayerInTurn()==Player.RED)
+    {
+      return Player.RED;
+    }
+    else
+    {
+      return null;
+    }
+  }
+
+  public int getAge()
+  {
+    return age;
+  }
+
+  public boolean moveUnit( Position from, Position to )
+  {
+    UnitImpl u = new UnitImpl();
+    unitTiles.remove(from, u);
+    unitTiles.put(to, u);
+
+    int from_col = from.getColumn();
+    int from_row = from.getRow();
+
+    int to_col = to.getColumn();
+    int to_row = to.getRow();
+
+    int col_moves = from_col - to_col;
+    int row_moves = from_row - to_row;
+
+    int total_moves = Math.abs(col_moves) + Math.abs(row_moves);
+
+    u.setMovecount(total_moves);
+
+    return Boolean.TRUE;
+  }
+  public void endOfTurn()
+  {
+    //End of round increment age
+    if(redTurn==false)
+    {
+      age = age + 100;
+    }
+
+    //Change player turn indicator
+    if(redTurn == true)
+    {
+      redTurn = false;
+    }
+    else
+    {
+      redTurn = true;
+    }
+
+  }
+
+  public void changeWorkForceFocusInCityAt( Position p, String balance )
+  {
+
+  }
+
+  public void changeProductionInCityAt( Position p, String unitType )
+  {
+
+  }
+
+  public void performUnitActionAt( Position p )
+  {
+
+  }
+
 }

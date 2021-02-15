@@ -1,11 +1,11 @@
 package hotciv.standard;
 
+import com.sun.tools.attach.AgentInitializationException;
 import hotciv.framework.*;
 
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
-
 import java.util.*;
 
 /** Skeleton class for AlphaCiv test cases
@@ -50,32 +50,97 @@ public class TestAlphaCiv {
   public void shouldBeRedAsStartingPlayer() {
     assertThat(game, is(notNullValue()));
     // TODO: reenable the assert below to get started...
-    // assertThat(game.getPlayerInTurn(), is(Player.RED));
+     assertThat(game.getPlayerInTurn(), is(Player.RED));
   }
 
-  /** REMOVE ME. Not a test of HotCiv, just an example of what
-      matchers the hamcrest library has... */
   @Test
-  public void shouldDefinetelyBeRemoved() {
-    // Matching null and not null values
-    // 'is' require an exact match
-    String s = null;
-    assertThat(s, is(nullValue()));
-    s = "Ok";
-    assertThat(s, is(notNullValue()));
-    assertThat(s, is("Ok"));
+  public void startDate()
+  {
+    assertThat(game.getAge(), is(-4000));
+  }
 
-    // If you only validate substrings, use containsString
-    assertThat("This is a dummy test", containsString("dummy"));
+  @Test
+  public void defaultWinner()
+  {
+      Player play = game.getPlayerInTurn();
 
-    // Match contents of Lists
-    List<String> l = new ArrayList<String>();
-    l.add("Bimse");
-    l.add("Bumse");
-    // Note - ordering is ignored when matching using hasItems
-    assertThat(l, hasItems(new String[] {"Bumse","Bimse"}));
+      if(play == Player.RED && game.getAge()==3000)
+      {
+        assertThat(game.getWinner(), is(Player.RED));
+      }
+      else
+      {
+        assertThat(game.getWinner(), is(nullValue()));
+      }
+  }
 
-    // Matchers may be combined, like is-not
-    assertThat(l.get(0), is(not("Bumse")));
+  @Test
+  public void incrementAge()
+  {
+    assertThat(game.getAge(), is(-4000));
+    //end red turn
+    game.endOfTurn();
+    //end blue turn
+    game.endOfTurn();
+    assertThat(game.getAge(), is(-3900));
+  }
+
+  @Test
+  public void blueTurnAfterRed()
+  {
+    assertThat(game.getPlayerInTurn(), is(Player.RED));
+    game.endOfTurn();
+    assertThat(game.getPlayerInTurn(), is(Player.BLUE));
+  }
+
+  @Test
+  public void twoPlayers()
+  {
+    assertThat(game.getPlayerInTurn(), is(Player.RED));
+    game.endOfTurn();
+    assertThat(game.getPlayerInTurn(), is(Player.BLUE));
+    game.endOfTurn();
+    assertThat(game.getPlayerInTurn(), is(Player.RED));
+  }
+
+  @Test
+  public void initialTiles()
+  {
+    Position p = new Position(1,1);
+    Tile t = game.getTileAt(p);
+    assertThat(t.getTypeString(), is(GameConstants.PLAINS));
+
+    Position ocean = new Position(1,0);
+    Tile t_ocean = game.getTileAt(ocean);
+    assertThat(t_ocean.getTypeString(), is(GameConstants.OCEANS));
+
+    Position hills = new Position(0,1);
+    Tile t_plains = game.getTileAt(hills);
+    assertThat(t_plains.getTypeString(), is(GameConstants.HILLS));
+
+    Position mountain = new Position(2,2);
+    Tile t_mountain = game.getTileAt(mountain);
+    assertThat(t_mountain.getTypeString(), is(GameConstants.MOUNTAINS));
+
+    Position red_city = new Position(1,1);
+    Tile t_city = game.getTileAt(red_city);
+  }
+
+  @Test
+  public void MoveUnitTest()
+  {
+    Position from = new Position(1,1);
+    Position to = new Position(1,3);
+
+    assertThat(game.moveUnit(from, to), is(Boolean.TRUE));
+
+    Unit u = game.getUnitAt(to);
+    assertThat(u.getMoveCount(), is(2));
+  }
+
+  @Test
+  public void unitImplTest()
+  {
+    //Unit.get
   }
 }
