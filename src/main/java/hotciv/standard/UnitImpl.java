@@ -9,10 +9,11 @@ public class UnitImpl implements Unit {
     String type;
     Position pos;
 
-    public void UnitImpl(Position p)
+    public void UnitImpl(Position p, String t)
     {
         pos = p;
         movecount = 0;
+        type = t;
     }
 
     public String getTypeString()
