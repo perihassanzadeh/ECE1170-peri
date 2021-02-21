@@ -167,7 +167,7 @@ public class GameImpl implements Game {
     UnitImpl u = new UnitImpl();
     unitTiles.remove(from, u);
 
-    //Attacking always wins
+    //Attacking always wins 
     if(unitTiles.get(to)!= null)
     {
       unitTiles.remove(to);
