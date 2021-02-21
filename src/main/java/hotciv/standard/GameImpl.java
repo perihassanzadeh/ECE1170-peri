@@ -39,12 +39,14 @@ public class GameImpl implements Game {
   int age;
   HashMap<Position, Tile> boardTiles = new HashMap<>();
   HashMap<Position, Unit> unitTiles = new HashMap<>();
+  HashMap<Position, City> cityTiles = new HashMap<>();
 
   public GameImpl()
   {
     redTurn = true;
     age = -4000;
 
+    //Initialize Tiles
     for(int i = 0; i<GameConstants.WORLDSIZE; i++)
     {
       for(int j=0; j<GameConstants.WORLDSIZE; j++)
@@ -78,6 +80,37 @@ public class GameImpl implements Game {
 
       }
     }
+
+    //Red city at (1,1)
+    CityImpl red = new CityImpl();
+    red.CityImpl(Player.RED, GameConstants.productionFocus);
+    Position redCity = new Position(1,1);
+    cityTiles.put(redCity, red);
+
+    //Blue city at (4,1)
+    CityImpl blue = new CityImpl();
+    blue.CityImpl(Player.BLUE, GameConstants.productionFocus);
+    Position blueCity = new Position(4,1);
+    cityTiles.put(blueCity, blue);
+
+    //Red Archer
+    Position rArc = new Position(2,0);
+    UnitImpl redArcher = new UnitImpl();
+    redArcher.UnitImpl(rArc, GameConstants.ARCHER);
+    unitTiles.put(rArc, redArcher);
+
+    //Blue Legion
+    Position bLeg = new Position(3,2);
+    UnitImpl blueLegion = new UnitImpl();
+    blueLegion.UnitImpl(bLeg, GameConstants.LEGION);
+    unitTiles.put(bLeg, blueLegion);
+
+    //Red Settler
+    Position rSet = new Position(4,3);
+    UnitImpl redSettler = new UnitImpl();
+    redSettler.UnitImpl(rSet, GameConstants.SETTLER);
+    unitTiles.put(rSet, redSettler);
+
   }
 
   public Tile getTileAt( Position p )
@@ -92,7 +125,7 @@ public class GameImpl implements Game {
 
   public City getCityAt( Position p )
   {
-    return null;
+    return cityTiles.get(p);
   }
 
   public Player getPlayerInTurn()
@@ -133,6 +166,13 @@ public class GameImpl implements Game {
   {
     UnitImpl u = new UnitImpl();
     unitTiles.remove(from, u);
+
+    //Attacking always wins 
+    if(unitTiles.get(to)!= null)
+    {
+      unitTiles.remove(to);
+    }
+
     unitTiles.put(to, u);
 
     int from_col = from.getColumn();
@@ -150,12 +190,31 @@ public class GameImpl implements Game {
 
     return Boolean.TRUE;
   }
+
   public void endOfTurn()
   {
-    //End of round increment age
+    //End of round increment age and change production
     if(redTurn==false)
     {
       age = age + 100;
+
+      int size = cityTiles.size();
+      for(int i=0; i<=16; i++)
+      {
+        for(int j=0; j<=16; j++)
+        {
+          Position p = new Position(i, j);
+          City c = new CityImpl();
+          c = cityTiles.get(p);
+          if(c != null)
+          {
+            int current = c.getTreasury();
+            //c.setTreasury(current + 6);
+          }
+        }
+      }
+
+      endOfRound();
     }
 
     //Change player turn indicator
@@ -177,10 +236,16 @@ public class GameImpl implements Game {
 
   public void changeProductionInCityAt( Position p, String unitType )
   {
-
+    City c = cityTiles.get(p);
+    //c.setProduction(unitType);
   }
 
   public void performUnitActionAt( Position p )
+  {
+    //No associated Action at this time
+  }
+
+  public void endOfRound()
   {
 
   }

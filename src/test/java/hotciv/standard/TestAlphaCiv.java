@@ -139,8 +139,41 @@ public class TestAlphaCiv {
   }
 
   @Test
-  public void unitImplTest()
+  public void cityTest()
   {
-    //Unit.get
+    Position red = new Position(1,1);
+    Position blue = new Position(4,1);
+
+    City redCity = game.getCityAt(red);
+    assertThat(redCity.getOwner(), is(Player.RED));
+
+    City blueCity = game.getCityAt(blue);
+    assertThat(blueCity.getOwner(), is(Player.BLUE));
+  }
+
+  public void cityPopulationTest()
+  {
+    Position red = new Position(1,1);
+    City redCity = game.getCityAt(red);
+    assertThat(redCity.getSize(), is(1));
+  }
+
+  public void cityTreasuryTest()
+  {
+    //Initially Treasury is 0
+    Position red = new Position(1,1);
+    City redCity = game.getCityAt(red);
+    assertThat(redCity.getTreasury(), is(0));
+  }
+
+  public void initUnits()
+  {
+    Position rArc = new Position(2,0);
+    Position bLeg = new Position(3,2);
+    Position rSet = new Position(4,3);
+
+    assertThat(game.getUnitAt(rArc), is(GameConstants.ARCHER));
+    assertThat(game.getUnitAt(bLeg), is(GameConstants.LEGION));
+    assertThat(game.getUnitAt(rSet), is(GameConstants.SETTLER));
   }
 }
