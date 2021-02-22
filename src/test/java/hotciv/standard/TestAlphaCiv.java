@@ -122,8 +122,6 @@ public class TestAlphaCiv {
     Tile t_mountain = game.getTileAt(mountain);
     assertThat(t_mountain.getTypeString(), is(GameConstants.MOUNTAINS));
 
-    Position red_city = new Position(1,1);
-    Tile t_city = game.getTileAt(red_city);
   }
 
   @Test
@@ -139,8 +137,34 @@ public class TestAlphaCiv {
   }
 
   @Test
-  public void unitImplTest()
+  public void cityInitTest()
   {
-    //Unit.get
+    Position red_city = new Position(1,1);
+    City red = game.getCityAt(red_city);
+    assertThat(red.getOwner(), is(Player.RED));
+
+    Position blue_city = new Position(4,1);
+    City blue = game.getCityAt(blue_city);
+    assertThat(blue.getOwner(), is(Player.BLUE));
+
+  }
+
+  @Test
+  public void unitInitTest()
+  {
+    //Red has archer at (2,0), Blue has legion at (3,2), red has settler at (4,3) - WORKING
+    Position r_arch = new Position(2,0);
+    Position b_leg = new Position(3,2);
+    Position r_set = new Position(4,3);
+
+    assertThat(game.getUnitAt(r_arch), is(GameConstants.ARCHER));
+    assertThat(game.getUnitAt(b_leg), is(GameConstants.LEGION));
+    assertThat(game.getUnitAt(r_set), is(GameConstants.SETTLER));
+    Unit r_a = game.getUnitAt(r_arch);
+    assertThat(r_a.getOwner(), is(Player.RED));
+    Unit b_l = game.getUnitAt(b_leg);
+    assertThat(b_l.getOwner(), is(Player.BLUE));
+    Unit r_s = game.getUnitAt(r_set);
+    assertThat(r_s.getOwner(), is(Player.RED));
   }
 }
