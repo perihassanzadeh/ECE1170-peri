@@ -151,6 +151,7 @@ public class TestAlphaCiv {
     assertThat(blueCity.getOwner(), is(Player.BLUE));
   }
 
+  @Test
   public void cityPopulationTest()
   {
     Position red = new Position(1,1);
@@ -158,6 +159,7 @@ public class TestAlphaCiv {
     assertThat(redCity.getSize(), is(1));
   }
 
+  @Test
   public void cityTreasuryTest()
   {
     //Initially Treasury is 0
@@ -166,14 +168,33 @@ public class TestAlphaCiv {
     assertThat(redCity.getTreasury(), is(0));
   }
 
+  @Test
   public void initUnits()
   {
     Position rArc = new Position(2,0);
     Position bLeg = new Position(3,2);
     Position rSet = new Position(4,3);
 
-    assertThat(game.getUnitAt(rArc), is(GameConstants.ARCHER));
-    assertThat(game.getUnitAt(bLeg), is(GameConstants.LEGION));
-    assertThat(game.getUnitAt(rSet), is(GameConstants.SETTLER));
+    Unit r_a = game.getUnitAt(rArc);
+    assertThat(r_a.getTypeString(), is(GameConstants.ARCHER));
+
+    Unit b_l = game.getUnitAt(bLeg);
+    assertThat(b_l.getTypeString(), is(GameConstants.LEGION));
+
+    Unit r_s = game.getUnitAt(rSet);
+    assertThat(r_s.getTypeString(), is(GameConstants.SETTLER));
+  }
+
+  @Test
+  public void attackerWins()
+  {
+    Position rArc = new Position(2,0);
+    Position bLeg = new Position(3,2);
+
+    game.moveUnit(rArc, bLeg);
+
+    Unit redArcher = game.getUnitAt(bLeg);
+    //assertThat(redArcher.getTypeString(), is(GameConstants.ARCHER));
+    //assertThat(redArcher.getOwner(), is(Player.RED));
   }
 }

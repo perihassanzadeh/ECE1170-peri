@@ -165,6 +165,7 @@ public class GameImpl implements Game {
   public boolean moveUnit( Position from, Position to )
   {
     UnitImpl u = new UnitImpl();
+    //u = getUnitAt(from);
     unitTiles.remove(from, u);
 
     //Attacking always wins 
