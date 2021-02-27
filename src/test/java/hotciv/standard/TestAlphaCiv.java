@@ -129,8 +129,8 @@ public class TestAlphaCiv {
   @Test
   public void MoveUnitTest()
   {
-    Position from = new Position(1,1);
-    Position to = new Position(1,3);
+    Position from = new Position(2,0);
+    Position to = new Position(4,0);
 
     assertThat(game.moveUnit(from, to), is(Boolean.TRUE));
 

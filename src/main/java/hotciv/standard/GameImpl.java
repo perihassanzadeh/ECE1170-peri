@@ -164,8 +164,8 @@ public class GameImpl implements Game {
 
   public boolean moveUnit( Position from, Position to )
   {
-    UnitImpl u = new UnitImpl();
-    //u = getUnitAt(from);
+    Unit u = new UnitImpl();
+    u = getUnitAt(from);
     unitTiles.remove(from, u);
 
     //Attacking always wins 
@@ -210,7 +210,7 @@ public class GameImpl implements Game {
           if(c != null)
           {
             int current = c.getTreasury();
-            //c.setTreasury(current + 6);
+            c.setTreasury(current + 6);
           }
         }
       }
@@ -238,7 +238,7 @@ public class GameImpl implements Game {
   public void changeProductionInCityAt( Position p, String unitType )
   {
     City c = cityTiles.get(p);
-    //c.setProduction(unitType);
+    c.setProduction(unitType);
   }
 
   public void performUnitActionAt( Position p )
