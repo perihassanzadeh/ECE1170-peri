@@ -65,4 +65,6 @@ public interface Unit {
   public int getAttackingStrength();
 
   public void setMovecount(int movecount);
+  public void fortifyUnit();
+  public void setOwner(Player p);
 }

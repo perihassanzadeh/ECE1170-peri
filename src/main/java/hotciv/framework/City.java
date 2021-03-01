@@ -65,4 +65,5 @@ public interface City {
   public String getWorkforceFocus();
 
   public void setTreasury(int t);
+  public void setOwner(Player own);
 }
