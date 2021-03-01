@@ -8,12 +8,14 @@ public class UnitImpl implements Unit {
     Player player;
     String type;
     Position pos;
+    boolean fortified;
 
     public void UnitImpl(Position p, String t)
     {
         pos = p;
         movecount = 0;
         type = t;
+        fortified = false;
     }
 
     public String getTypeString()
@@ -44,6 +46,23 @@ public class UnitImpl implements Unit {
     public int getAttackingStrength()
     {
         return 0;
+    }
+
+    public void fortifyUnit()
+    {
+        if(fortified==true)
+        {
+            fortified = false;
+        }
+        else
+        {
+            fortified = true;
+        }
+    }
+
+    public void setOwner(Player p)
+    {
+        player = p;
     }
 
 }

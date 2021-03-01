@@ -80,4 +80,9 @@ public class CityImpl implements City {
     {
         treasure = t;
     }
+
+    public void setOwner(Player own)
+    {
+        owner = own;
+    }
 }

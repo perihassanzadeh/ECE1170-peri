@@ -3,6 +3,7 @@ package hotciv.standard;
 import com.sun.tools.attach.AgentInitializationException;
 import hotciv.framework.*;
 
+import hotciv.variants.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -38,11 +39,17 @@ import java.util.*;
 */
 public class TestAlphaCiv {
   private Game game;
+  private AgeStrategy alpha_agingstrategy;
+  private AgeStrategy beta_agingStrategy;
+  private UnitActionStrategy alpha_UnitActionStrategy;
 
   /** Fixture for alphaciv testing. */
   @Before
   public void setUp() {
-    game = new GameImpl();
+    game = new GameImpl(new Strategy());
+    alpha_agingstrategy =  new AlphaAgeStrategy();
+    beta_agingStrategy = new BetaAgeStrategy();
+    alpha_UnitActionStrategy = new AlphaUnitActionStrategy();
   }
 
   // FRS p. 455 states that 'Red is the first player to take a turn'.
@@ -186,15 +193,27 @@ public class TestAlphaCiv {
   }
 
   @Test
-  public void attackerWins()
+  public void attackingUnitWins()
   {
     Position rArc = new Position(2,0);
     Position bLeg = new Position(3,2);
 
+    Unit redArcherBeforeMove = game.getUnitAt(rArc);
+    assertThat(redArcherBeforeMove.getOwner(), is(Player.RED));
+
     game.moveUnit(rArc, bLeg);
 
     Unit redArcher = game.getUnitAt(bLeg);
-    //assertThat(redArcher.getTypeString(), is(GameConstants.ARCHER));
-    //assertThat(redArcher.getOwner(), is(Player.RED));
+    assertThat(redArcher.getTypeString(), is(GameConstants.ARCHER));
+    assertThat(redArcher.getOwner(), is(Player.RED));
+  }
+
+  @Test
+  public void unitActionsTest()
+  {
+    Position rArcher = new Position(2,0);
+    Unit redArcher = game.getUnitAt(rArcher);
+
+    assertThat(alpha_UnitActionStrategy.getAction(rArcher, game), is(Boolean.FALSE));
   }
 }

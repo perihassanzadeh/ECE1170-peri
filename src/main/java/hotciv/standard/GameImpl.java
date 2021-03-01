@@ -1,6 +1,7 @@
 package hotciv.standard;
 
 import hotciv.framework.*;
+import hotciv.variants.*;
 
 import java.util.HashMap;
 
@@ -40,80 +41,32 @@ public class GameImpl implements Game {
   HashMap<Position, Tile> boardTiles = new HashMap<>();
   HashMap<Position, Unit> unitTiles = new HashMap<>();
   HashMap<Position, City> cityTiles = new HashMap<>();
+  private AgeStrategy ageStrategy;
+  private WinnerStrategy winnerStrategy;
+  private UnitActionStrategy unitActionStrategy;
+  private WorldLayoutStrategy worldLayoutStrategy;
 
-  public GameImpl()
+  public GameImpl(Strategy strategy)
   {
     redTurn = true;
     age = -4000;
+    this.ageStrategy = strategy.makeAlphaAgingStrategy();
+    this.winnerStrategy = strategy.makeAlphaWinnerStrategy();
+    this.unitActionStrategy = strategy.makeAlphaUnitActionStrategy();
+    this.worldLayoutStrategy = strategy.makeAlphaWorldLayoutStrategy();
 
-    //Initialize Tiles
-    for(int i = 0; i<GameConstants.WORLDSIZE; i++)
-    {
-      for(int j=0; j<GameConstants.WORLDSIZE; j++)
-      {
-        Position p = new Position(i,j);
-
-        if(i==1 && j==0)
-        {
-          String type = GameConstants.OCEANS;
-          Tile t = new TileImpl(type);
-          boardTiles.put(p,t);
-        }
-        else if(i==0 && j==1)
-        {
-          String type = GameConstants.HILLS;
-          Tile t = new TileImpl(type);
-          boardTiles.put(p,t);
-        }
-        else if(i==2 && j==2)
-        {
-          String type = GameConstants.MOUNTAINS;
-          Tile t = new TileImpl(type);
-          boardTiles.put(p,t);
-        }
-        else
-        {
-          String type = GameConstants.PLAINS;
-          Tile t = new TileImpl(type);
-          boardTiles.put(p, t);
-        }
-
-      }
-    }
-
-    //Red city at (1,1)
-    CityImpl red = new CityImpl();
-    red.CityImpl(Player.RED, GameConstants.productionFocus);
-    Position redCity = new Position(1,1);
-    cityTiles.put(redCity, red);
-
-    //Blue city at (4,1)
-    CityImpl blue = new CityImpl();
-    blue.CityImpl(Player.BLUE, GameConstants.productionFocus);
-    Position blueCity = new Position(4,1);
-    cityTiles.put(blueCity, blue);
-
-    //Red Archer
-    Position rArc = new Position(2,0);
-    UnitImpl redArcher = new UnitImpl();
-    redArcher.UnitImpl(rArc, GameConstants.ARCHER);
-    unitTiles.put(rArc, redArcher);
-
-    //Blue Legion
-    Position bLeg = new Position(3,2);
-    UnitImpl blueLegion = new UnitImpl();
-    blueLegion.UnitImpl(bLeg, GameConstants.LEGION);
-    unitTiles.put(bLeg, blueLegion);
-
-    //Red Settler
-    Position rSet = new Position(4,3);
-    UnitImpl redSettler = new UnitImpl();
-    redSettler.UnitImpl(rSet, GameConstants.SETTLER);
-    unitTiles.put(rSet, redSettler);
+    boardTiles = worldLayoutStrategy.createLayout(this);
+    unitTiles = worldLayoutStrategy.createUnits(this);
+    cityTiles = worldLayoutStrategy.createCities(this);
 
   }
 
-  public Tile getTileAt( Position p )
+  public void setAgeStrategy(AgeStrategy ageStrategy)
+  {
+    this.ageStrategy = ageStrategy;
+  }
+
+  public Tile getTileAt(Position p )
   {
     return boardTiles.get(p);
   }
@@ -147,14 +100,7 @@ public class GameImpl implements Game {
 
   public Player getWinner()
   {
-    if(getAge()==3000 && getPlayerInTurn()==Player.RED)
-    {
-      return Player.RED;
-    }
-    else
-    {
-      return null;
-    }
+    return winnerStrategy.getWinner(this);
   }
 
   public int getAge()
@@ -197,7 +143,7 @@ public class GameImpl implements Game {
     //End of round increment age and change production
     if(redTurn==false)
     {
-      age = age + 100;
+      age = ageStrategy.calcNextWorldAge(age);
 
       int size = cityTiles.size();
       for(int i=0; i<=16; i++)
@@ -243,12 +189,32 @@ public class GameImpl implements Game {
 
   public void performUnitActionAt( Position p )
   {
-    //No associated Action at this time
+    boolean action;
+
+    action = unitActionStrategy.getAction(p, this);
   }
 
   public void endOfRound()
   {
 
+  }
+
+  public void createCity(Position p, Player owner)
+  {
+    City c = new CityImpl();
+    c.setOwner(owner);
+    cityTiles.put(p, c);
+
+  }
+
+  public void removeUnit(Position p)
+  {
+    unitTiles.remove(p);
+  }
+
+  public void setTileType(Position p, Tile t)
+  {
+    boardTiles.put(p,t);
   }
 
 }
