@@ -66,19 +66,19 @@ public class GameImpl implements Game {
     this.ageStrategy = ageStrategy;
   }
 
-  public Tile getTileAt(Position p )
+  public Tile getTileAt(Position position )
   {
-    return boardTiles.get(p);
+    return boardTiles.get(position);
   }
 
-  public Unit getUnitAt( Position p )
+  public Unit getUnitAt( Position position )
   {
-    return unitTiles.get(p);
+    return unitTiles.get(position);
   }
 
-  public City getCityAt( Position p )
+  public City getCityAt( Position position )
   {
-    return cityTiles.get(p);
+    return cityTiles.get(position);
   }
 
   public Player getPlayerInTurn()
@@ -110,18 +110,45 @@ public class GameImpl implements Game {
 
   public boolean moveUnit( Position from, Position to )
   {
-    Unit u = new UnitImpl();
-    u = getUnitAt(from);
-    unitTiles.remove(from, u);
 
-    //Attacking always wins 
+    boolean validMove = false;
+    Unit unit = new UnitImpl();
+    unit = getUnitAt(from);
+
+    if(unit != null)
+    {
+      for (Position position : Utility.get8neighborhoodOf(from))
+      {
+        int positionRow = position.getRow();
+        int positionCol = position.getColumn();
+
+        if (positionRow == to.getRow() && positionCol == to.getColumn() && getTileAt(position).getValidMove() && (getUnitAt(to) == null || unit.getOwner() != getUnitAt(to).getOwner()))
+        {
+          validMove = true;
+          break;
+        }
+      }
+      unitTiles.remove(from, unit);
+    }
+
+    //Attacking always wins
     if(unitTiles.get(to)!= null)
     {
       unitTiles.remove(to);
     }
 
-    unitTiles.put(to, u);
+    unitTiles.put(to, unit);
 
+    int total_moves = calcMoveCount(to, from);
+
+    unit.setMovecount(total_moves);
+
+    return Boolean.TRUE;
+
+  }
+
+  private int calcMoveCount(Position to, Position from)
+  {
     int from_col = from.getColumn();
     int from_row = from.getRow();
 
@@ -133,9 +160,7 @@ public class GameImpl implements Game {
 
     int total_moves = Math.abs(col_moves) + Math.abs(row_moves);
 
-    u.setMovecount(total_moves);
-
-    return Boolean.TRUE;
+    return total_moves;
   }
 
   public void endOfTurn()
@@ -146,22 +171,22 @@ public class GameImpl implements Game {
       age = ageStrategy.calcNextWorldAge(age);
 
       int size = cityTiles.size();
-      for(int i=0; i<=16; i++)
+
+      for(int row=0; row<=size; row++)
       {
-        for(int j=0; j<=16; j++)
+        for(int column=0; column<=size; column++)
         {
-          Position p = new Position(i, j);
-          City c = new CityImpl();
-          c = cityTiles.get(p);
-          if(c != null)
+          Position position = new Position(row, column);
+          City city = new CityImpl();
+          city = cityTiles.get(position);
+
+          if(city != null)
           {
-            int current = c.getTreasury();
-            c.setTreasury(current + 6);
+            int current = city.getTreasury();
+            city.setTreasury(current + 6);
           }
         }
       }
-
-      endOfRound();
     }
 
     //Change player turn indicator
@@ -181,40 +206,35 @@ public class GameImpl implements Game {
 
   }
 
-  public void changeProductionInCityAt( Position p, String unitType )
+  public void changeProductionInCityAt( Position position, String unitType )
   {
-    City c = cityTiles.get(p);
-    c.setProduction(unitType);
+    City city = cityTiles.get(position);
+    city.setProduction(unitType);
   }
 
-  public void performUnitActionAt( Position p )
+  public void performUnitActionAt( Position position )
   {
     boolean action;
 
-    action = unitActionStrategy.getAction(p, this);
+    action = unitActionStrategy.getAction(position, this);
   }
 
-  public void endOfRound()
+  public void createCity(Position position, Player owner)
   {
-
-  }
-
-  public void createCity(Position p, Player owner)
-  {
-    City c = new CityImpl();
-    c.setOwner(owner);
-    cityTiles.put(p, c);
+    City city = new CityImpl();
+    city.setOwner(owner);
+    cityTiles.put(position, city);
 
   }
 
-  public void removeUnit(Position p)
+  public void removeUnit(Position position)
   {
-    unitTiles.remove(p);
+    unitTiles.remove(position);
   }
 
-  public void setTileType(Position p, Tile t)
+  public void setTileType(Position position, Tile tile)
   {
-    boardTiles.put(p,t);
+    boardTiles.put(position,tile);
   }
 
 }
