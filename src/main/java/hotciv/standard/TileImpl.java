@@ -6,6 +6,7 @@ public class TileImpl implements Tile {
 
     String type;
     Boolean isCity = false;
+    Boolean canMove;
 
     public TileImpl(String g)
     {
@@ -30,5 +31,20 @@ public class TileImpl implements Tile {
     public void setIsCity(Boolean change)
     {
         isCity = change;
+    }
+
+    public Boolean getValidMove()
+    {
+        return canMove;
+    }
+
+    public void setMoves()
+    {
+        canMove = false;
+
+        if(type == GameConstants.PLAINS ||type == GameConstants.FOREST || type == GameConstants.HILLS)
+        {
+            canMove=true;
+        }
     }
 }
