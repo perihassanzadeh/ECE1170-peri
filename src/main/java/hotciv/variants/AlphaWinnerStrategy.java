@@ -7,7 +7,10 @@ public class AlphaWinnerStrategy implements WinnerStrategy{
 
     public Player getWinner(Game g)
     {
-        if(g.getAge()==-3000 && g.getPlayerInTurn()==Player.RED)
+        Player inTurn = g.getPlayerInTurn();
+        int gameAge = g.getAge();
+
+        if(gameAge==-3000 && inTurn==Player.RED)
         {
             return Player.RED;
         }

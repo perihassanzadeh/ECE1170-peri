@@ -141,4 +141,5 @@ public interface Game {
   public void createCity(Position p, Player owner);
   public void removeUnit(Position p);
   public void setTileType(Position p, Tile t);
+  public int getRound();
 }

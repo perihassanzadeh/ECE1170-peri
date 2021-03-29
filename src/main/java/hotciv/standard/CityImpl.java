@@ -8,20 +8,12 @@ public class CityImpl implements City {
     Player owner;
     String focus, unit;
 
-    public void CityImpl()
-    {
-        treasure = 0;
-        pop = 1;
-        focus = GameConstants.productionFocus;
-        unit = GameConstants.ARCHER;
-    }
-
-    public void CityImpl(Player p, String foc)
+    public void CityImpl(Player p)
     {
         pop = 1;
         treasure = 0;
         owner = p;
-        focus = foc;
+        focus = GameConstants.productionFocus;
         unit = GameConstants.ARCHER;
     }
 

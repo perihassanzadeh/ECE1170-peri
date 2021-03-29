@@ -54,13 +54,13 @@ public class AlphaWorldLayoutStrategy implements WorldLayoutStrategy{
 
         //Red city at (1,1)
         CityImpl red = new CityImpl();
-        red.CityImpl(Player.RED, GameConstants.productionFocus);
+        red.CityImpl(Player.RED);
         Position redCity = new Position(1,1);
         cities.put(redCity, red);
 
         //Blue city at (4,1)
         CityImpl blue = new CityImpl();
-        blue.CityImpl(Player.BLUE, GameConstants.productionFocus);
+        blue.CityImpl(Player.BLUE);
         Position blueCity = new Position(4,1);
         cities.put(blueCity, blue);
 

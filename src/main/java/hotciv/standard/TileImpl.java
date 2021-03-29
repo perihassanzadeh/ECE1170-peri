@@ -11,6 +11,7 @@ public class TileImpl implements Tile {
     public TileImpl(String g)
     {
         type = g;
+        setMoves();
     }
 
     public String getTypeString()
