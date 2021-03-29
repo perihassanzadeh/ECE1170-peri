@@ -1,6 +1,7 @@
 package hotciv.standard;
-
+import java.util.*;
 import hotciv.framework.*;
+import hotciv.standard.*;
 import hotciv.variants.*;
 
 import java.util.HashMap;
@@ -37,33 +38,42 @@ import java.lang.Math;
 public class GameImpl implements Game {
 
   boolean redTurn;
-  int age;
+  int age, round;
   HashMap<Position, Tile> boardTiles = new HashMap<>();
   HashMap<Position, Unit> unitTiles = new HashMap<>();
   HashMap<Position, City> cityTiles = new HashMap<>();
+  private List<Battle> battles;
   private AgeStrategy ageStrategy;
   private WinnerStrategy winnerStrategy;
   private UnitActionStrategy unitActionStrategy;
   private WorldLayoutStrategy worldLayoutStrategy;
+  private AttackStrategy attackStrategy;
 
   public GameImpl(Strategy strategy)
   {
     redTurn = true;
     age = -4000;
+    round = 0;
+    battles = new ArrayList<Battle>();
     this.ageStrategy = strategy.makeAlphaAgingStrategy();
     this.winnerStrategy = strategy.makeAlphaWinnerStrategy();
     this.unitActionStrategy = strategy.makeAlphaUnitActionStrategy();
     this.worldLayoutStrategy = strategy.makeAlphaWorldLayoutStrategy();
+    this.attackStrategy = strategy.makeAlphaAttackStrategy();
 
     boardTiles = worldLayoutStrategy.createLayout(this);
     unitTiles = worldLayoutStrategy.createUnits(this);
     cityTiles = worldLayoutStrategy.createCities(this);
-
   }
 
   public void setAgeStrategy(AgeStrategy ageStrategy)
   {
     this.ageStrategy = ageStrategy;
+  }
+
+  private boolean attack( Position attacker, Position defender )
+  {
+    return attackStrategy.attack(this, attacker, defender);
   }
 
   public Tile getTileAt(Position position )
@@ -108,59 +118,94 @@ public class GameImpl implements Game {
     return age;
   }
 
-  public boolean moveUnit( Position from, Position to )
+  public boolean moveUnit(Position from, Position to)
   {
+    Unit u = getUnitAt(from);
 
-    boolean validMove = false;
-    Unit unit = new UnitImpl();
-    unit = getUnitAt(from);
-
-    if(unit != null)
+    if (u != null)
     {
-      for (Position position : Utility.get8neighborhoodOf(from))
+      Tile t = getTileAt(to);
+      if (t.getValidMove()==false)
       {
-        int positionRow = position.getRow();
-        int positionCol = position.getColumn();
-
-        if (positionRow == to.getRow() && positionCol == to.getColumn() && getTileAt(position).getValidMove() && (getUnitAt(to) == null || unit.getOwner() != getUnitAt(to).getOwner()))
-        {
-          validMove = true;
-          break;
-        }
+        return false;
       }
-      unitTiles.remove(from, unit);
+
+      if (calcMoveCount(from,to) > u.getMoveCount())
+      {
+        return false;
+      }
+
+      if (u.getOwner() != getPlayerInTurn())
+      {
+        return false;
+      }
+
+      if (getUnitAt(to) != null )
+      {
+        if (getUnitAt(to).getOwner() == u.getOwner())
+        {
+          return false;
+        }
+        else {
+          boolean successful = attack(from, to);
+          if (successful == true)
+          {
+            unitTiles.put(to, u);
+
+            Player attacker = getUnitAt(from).getOwner();
+            Battle battle = new Battle(attacker, true, round);
+            battles.add(battle);
+
+            if(getCityAt(to) != null)
+            {
+              City c = new CityImpl();
+              c.setOwner(u.getOwner());
+              cityTiles.put(to, c);
+            }
+          }
+
+          Player attacker = getUnitAt(from).getOwner();
+          Battle battle = new Battle(attacker, false, round);
+          battles.add(battle);
+          u.setMovecount(0);
+
+          unitTiles.remove(from);
+
+        }
+      } else {
+        //u.setMovecount(0);
+        unitTiles.put(to, u);
+        unitTiles.remove(from);
+
+        if(getCityAt(to) != null){
+          Player own = u.getOwner();
+          City c = new CityImpl();
+          c.setOwner(own);
+          cityTiles.put(to, c);
+        }
+
+      }
+      return true;
     }
-
-    //Attacking always wins
-    if(unitTiles.get(to)!= null)
-    {
-      unitTiles.remove(to);
+    else {
+      return false;
     }
-
-    unitTiles.put(to, unit);
-
-    int total_moves = calcMoveCount(to, from);
-
-    unit.setMovecount(total_moves);
-
-    return Boolean.TRUE;
 
   }
 
   private int calcMoveCount(Position to, Position from)
   {
-    int from_col = from.getColumn();
-    int from_row = from.getRow();
+    int column = Math.abs(to.getColumn() - from.getColumn());
+    int row = Math.abs(to.getRow()-from.getRow());
 
-    int to_col = to.getColumn();
-    int to_row = to.getRow();
-
-    int col_moves = from_col - to_col;
-    int row_moves = from_row - to_row;
-
-    int total_moves = Math.abs(col_moves) + Math.abs(row_moves);
+    int total_moves = Math.max( row, column);
 
     return total_moves;
+  }
+
+  public List<Battle> getBattles()
+  {
+    return battles;
   }
 
   public void endOfTurn()
@@ -169,7 +214,7 @@ public class GameImpl implements Game {
     if(redTurn==false)
     {
       age = ageStrategy.calcNextWorldAge(age);
-
+      round = round+1;
       int size = cityTiles.size();
 
       for(int row=0; row<=size; row++)
@@ -237,4 +282,8 @@ public class GameImpl implements Game {
     boardTiles.put(position,tile);
   }
 
+  public int getRound()
+  {
+    return round;
+  }
 }

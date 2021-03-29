@@ -4,18 +4,16 @@ import hotciv.framework.*;
 
 public class UnitImpl implements Unit {
 
-    int movecount;
+    int movecount=1;
     Player player;
     String type;
     Position pos;
-    boolean fortified;
+    boolean fortified = false;
 
     public void UnitImpl(Position p, String t)
     {
         pos = p;
-        movecount = 0;
         type = t;
-        fortified = false;
     }
 
     public String getTypeString()
@@ -40,12 +38,47 @@ public class UnitImpl implements Unit {
 
     public int getDefensiveStrength()
     {
-        return 0;
+        int strength;
+
+        if(type == GameConstants.LEGION)
+        {
+            strength=2;
+        }
+        else if(type == GameConstants.ARCHER)
+        {
+            strength=3;
+        }
+        else { //Settler
+            strength = 3;
+        }
+
+        if(fortified == true)
+        {
+            strength = strength*2;
+        }
+
+        return strength;
     }
 
     public int getAttackingStrength()
     {
-        return 0;
+        int strength;
+
+        if(type == GameConstants.ARCHER)
+        {
+            strength=2;
+        }
+        else if(type == GameConstants.LEGION)
+        {
+            strength=4;
+        }
+        else
+        {
+            //settler
+            strength=0;
+        }
+
+        return strength;
     }
 
     public void fortifyUnit()
@@ -56,6 +89,7 @@ public class UnitImpl implements Unit {
         }
         else
         {
+            setMovecount(0);
             fortified = true;
         }
     }
