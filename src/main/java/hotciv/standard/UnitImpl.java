@@ -48,8 +48,12 @@ public class UnitImpl implements Unit {
         {
             strength=3;
         }
-        else { //Settler
+        else if (type == GameConstants.SETTLER){ //Settler
             strength = 3;
+        }
+        else
+        {
+            strength = 8;
         }
 
         if(fortified == true)
@@ -72,10 +76,14 @@ public class UnitImpl implements Unit {
         {
             strength=4;
         }
+        else if(type == GameConstants.SETTLER)
+        {
+            strength=0;
+        }
         else
         {
-            //settler
-            strength=0;
+            //ufo
+            strength = 1;
         }
 
         return strength;

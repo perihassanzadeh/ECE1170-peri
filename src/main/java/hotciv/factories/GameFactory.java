@@ -10,4 +10,9 @@ public interface GameFactory {
     public UnitActionStrategy makeUnitActionStrategy();
 
     public AttackStrategy makeAttackStrategy();
+
+    public PopulationStrategy makePopulationStrategy();
+
+    public ProductionStrategy makeProductionStrategy();
+
 }

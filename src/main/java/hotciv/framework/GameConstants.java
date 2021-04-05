@@ -36,6 +36,7 @@ public class GameConstants {
   public static final String ARCHER    = "archer";
   public static final String LEGION    = "legion";
   public static final String SETTLER   = "settler";
+  public static final String UFO       = "ufo";
   // Valid terrain types
   public static final String PLAINS    = "plains";
   public static final String OCEANS    = "ocean";
@@ -45,4 +46,10 @@ public class GameConstants {
   // Valid production balance types
   public static final String productionFocus = "hammer";
   public static final String foodFocus = "apple";
+  //Valid tile production and food values
+  public static final int forestProd = 3;
+  public static final int hillsProd = 2;
+  public static final int mountainProd = 1;
+  public static final int plainsFood = 3;
+  public static final int oceanFood = 1;
 }

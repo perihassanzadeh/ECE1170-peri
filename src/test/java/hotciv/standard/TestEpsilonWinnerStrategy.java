@@ -1,5 +1,7 @@
 package hotciv.standard;
 
+import hotciv.factories.AlphaFactory;
+import hotciv.factories.EpsilonFactory;
 import hotciv.framework.*;
 import hotciv.variants.Strategy;
 import org.junit.*;
@@ -15,9 +17,10 @@ public class TestEpsilonWinnerStrategy {
     private Game game;
     private EpsilonWinnerStrategy epsilonWinnerStrategy;
     private WinnerStrategy winnerStrategy = new EpsilonWinnerStrategy();
+
     @Before
     public void setUp() {
-        game = new GameImpl(new Strategy());
+        game = new GameImpl(new EpsilonFactory(), new AlphaWorldLayoutStrategy());
         epsilonWinnerStrategy = new EpsilonWinnerStrategy();
     }
 

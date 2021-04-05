@@ -1,19 +1,18 @@
 package hotciv.factories;
 
-
 import hotciv.variants.*;
 
-public class EpsilonFactory implements GameFactory {
+public class EtaFactory implements GameFactory{
     public AgeStrategy makeAgeStrategy() {
         return new AlphaAgeStrategy();
     }
 
     public WinnerStrategy makeWinnerStrategy() {
-        return new EpsilonWinnerStrategy();
+        return new AlphaWinnerStrategy();
     }
 
     public AttackStrategy makeAttackStrategy() {
-        return new EpsilonAttackStrategy();
+        return new AlphaAttackStrategy();
     }
 
     public UnitActionStrategy makeUnitActionStrategy() {
@@ -22,11 +21,11 @@ public class EpsilonFactory implements GameFactory {
 
     @Override
     public PopulationStrategy makePopulationStrategy() {
-        return new AlphaPopulationStrategy();
+        return new EtaPopulationStrategy();
     }
 
     public ProductionStrategy makeProductionStrategy()
     {
-        return new AlphaProductionStrategy();
+        return new EtaProductionStrategy();
     }
 }

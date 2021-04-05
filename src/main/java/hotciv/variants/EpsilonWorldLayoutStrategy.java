@@ -1,11 +1,14 @@
-package hotciv.standard;
+package hotciv.variants;
 
 import hotciv.framework.*;
+import hotciv.standard.CityImpl;
+import hotciv.standard.TileImpl;
+import hotciv.standard.UnitImpl;
 import hotciv.variants.WorldLayoutStrategy;
 
 import java.util.HashMap;
 
-public class TestEpsilonWorld implements WorldLayoutStrategy {
+public class EpsilonWorldLayoutStrategy implements WorldLayoutStrategy {
     @Override
     public HashMap<Position, Unit> createUnits(Game g) {
 
