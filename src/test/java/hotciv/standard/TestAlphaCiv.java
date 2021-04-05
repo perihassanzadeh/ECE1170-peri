@@ -1,12 +1,14 @@
 package hotciv.standard;
 
 import com.sun.tools.attach.AgentInitializationException;
+import hotciv.factories.GameFactory;
 import hotciv.framework.*;
 
 import hotciv.variants.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+import hotciv.factories.*;
 import java.util.*;
 
 /** Skeleton class for AlphaCiv test cases
@@ -46,7 +48,7 @@ public class TestAlphaCiv {
   /** Fixture for alphaciv testing. */
   @Before
   public void setUp() {
-    game = new GameImpl(new Strategy());
+    game = new GameImpl(new AlphaFactory(), new AlphaWorldLayoutStrategy());
     alpha_agingstrategy =  new AlphaAgeStrategy();
     beta_agingStrategy = new BetaAgeStrategy();
     alpha_UnitActionStrategy = new AlphaUnitActionStrategy();

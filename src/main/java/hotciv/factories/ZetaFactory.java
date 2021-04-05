@@ -19,4 +19,14 @@ public class ZetaFactory implements GameFactory{
     public UnitActionStrategy makeUnitActionStrategy() {
         return new AlphaUnitActionStrategy();
     }
+
+    @Override
+    public PopulationStrategy makePopulationStrategy() {
+        return new AlphaPopulationStrategy();
+    }
+
+    public ProductionStrategy makeProductionStrategy()
+    {
+        return new AlphaProductionStrategy();
+    }
 }

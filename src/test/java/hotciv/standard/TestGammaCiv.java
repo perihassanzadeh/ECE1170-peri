@@ -1,12 +1,11 @@
 package hotciv.standard;
 
 import com.sun.tools.attach.AgentInitializationException;
+import hotciv.factories.AlphaFactory;
+import hotciv.factories.GammaFactory;
 import hotciv.framework.*;
 
-import hotciv.variants.UnitActionStrategy;
-import hotciv.variants.AlphaUnitActionStrategy;
-import hotciv.variants.GammaUnitActionStrategy;
-import hotciv.variants.Strategy;
+import hotciv.variants.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -19,7 +18,7 @@ public class TestGammaCiv {
 
     @Before
     public void setUp() {
-        game = new GameImpl(new Strategy());
+        game = new GameImpl(new GammaFactory(), new AlphaWorldLayoutStrategy());
         alpha_unitStrategy = new AlphaUnitActionStrategy();
         gamma_unitStrategy = new GammaUnitActionStrategy();
     }

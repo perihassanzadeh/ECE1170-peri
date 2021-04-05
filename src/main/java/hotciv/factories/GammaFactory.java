@@ -19,4 +19,14 @@ public class GammaFactory implements GameFactory{
     public UnitActionStrategy makeUnitActionStrategy() {
         return new GammaUnitActionStrategy();
     }
+
+    @Override
+    public PopulationStrategy makePopulationStrategy() {
+        return new AlphaPopulationStrategy();
+    }
+
+    public ProductionStrategy makeProductionStrategy()
+    {
+        return new AlphaProductionStrategy();
+    }
 }

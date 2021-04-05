@@ -10,19 +10,17 @@ import static org.hamcrest.CoreMatchers.*;
 import java.util.*;
 import hotciv.factories.*;
 
-public class TestZetaCiv {
+public class TestSemiCiv {
     private Game game;
-    private ZetaWinnerStrategy zetaWinnerStrategy;
 
 
     @Before
     public void setUp(){
-        game = new GameImpl(new ZetaFactory(), new AlphaWorldLayoutStrategy());
-        zetaWinnerStrategy = new ZetaWinnerStrategy(new BetaWinnerStrategy(), new EpsilonWinnerStrategy());
+        game = new GameImpl(new SemiFactory(), new DeltaWorldLayoutStrategy());
     }
 
     @Test
-    public void zetaCiv(){
+    public void semiCiv(){
         assertThat(game.getWinner(), is(nullValue()));
 
     }

@@ -1,9 +1,11 @@
 package hotciv.standard;
 
 import com.sun.tools.attach.AgentInitializationException;
+import hotciv.factories.BetaFactory;
 import hotciv.framework.*;
 
 import hotciv.variants.*;
+import org.hamcrest.Factory;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -13,11 +15,13 @@ public class TestBetaCiv {
     private Game game;
     private AgeStrategy beta_agingStrategy;
     private WinnerStrategy beta_winningStrategy;
+    private BetaFactory betaFactory;
+    private AlphaWorldLayoutStrategy alphaWorldLayoutStrategy;
 
     /** Fixture for betaciv testing. */
     @Before
     public void setUp() {
-        game = new GameImpl(new Strategy());
+        game = new GameImpl(new BetaFactory(), new AlphaWorldLayoutStrategy());
         beta_agingStrategy = new BetaAgeStrategy();
     }
 

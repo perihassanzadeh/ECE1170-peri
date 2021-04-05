@@ -1,5 +1,7 @@
 package hotciv.standard;
 import java.util.*;
+
+import hotciv.factories.GameFactory;
 import hotciv.framework.*;
 import hotciv.standard.*;
 import hotciv.variants.*;
@@ -49,17 +51,17 @@ public class GameImpl implements Game {
   private WorldLayoutStrategy worldLayoutStrategy;
   private AttackStrategy attackStrategy;
 
-  public GameImpl(Strategy strategy)
+  public GameImpl(GameFactory factory, WorldLayoutStrategy world)
   {
     redTurn = true;
     age = -4000;
     round = 0;
     battles = new ArrayList<Battle>();
-    this.ageStrategy = strategy.makeAlphaAgingStrategy();
-    this.winnerStrategy = strategy.makeAlphaWinnerStrategy();
-    this.unitActionStrategy = strategy.makeAlphaUnitActionStrategy();
-    this.worldLayoutStrategy = strategy.makeAlphaWorldLayoutStrategy();
-    this.attackStrategy = strategy.makeAlphaAttackStrategy();
+    this.ageStrategy = factory.makeAgeStrategy();
+    this.winnerStrategy = factory.makeWinnerStrategy();
+    this.unitActionStrategy = factory.makeUnitActionStrategy();
+    this.attackStrategy = factory.makeAttackStrategy();
+    this.worldLayoutStrategy = world;
 
     boardTiles = worldLayoutStrategy.createLayout(this);
     unitTiles = worldLayoutStrategy.createUnits(this);
@@ -125,7 +127,7 @@ public class GameImpl implements Game {
     if (u != null)
     {
       Tile t = getTileAt(to);
-      if (t.getValidMove()==false)
+      if (t.getValidMove()==false || (u.getTypeString()!=GameConstants.UFO))
       {
         return false;
       }
@@ -248,7 +250,8 @@ public class GameImpl implements Game {
 
   public void changeWorkForceFocusInCityAt( Position p, String balance )
   {
-
+    City c = getCityAt(p);
+    c.setWorkforceFocus(balance);
   }
 
   public void changeProductionInCityAt( Position position, String unitType )
@@ -286,4 +289,34 @@ public class GameImpl implements Game {
   {
     return round;
   }
+
+  private int costOfUnit(String unitType)
+  {
+    int cost;
+
+    if(unitType == GameConstants.ARCHER) {
+      cost = 10;
+      return cost;
+    }
+    else if(unitType == GameConstants.LEGION) {
+      cost = 15;
+      return cost;
+    }
+    else if(unitType == GameConstants.SETTLER)
+    {
+      cost = 30;
+      return cost;
+    }
+    else if(unitType == GameConstants.UFO)
+    {
+      cost = 60;
+      return cost;
+    }
+    else
+    {
+      return -1;
+    }
+  }
+
 }
+

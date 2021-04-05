@@ -1,6 +1,7 @@
 package hotciv.standard;
 
 import com.sun.tools.attach.AgentInitializationException;
+import hotciv.factories.BetaFactory;
 import hotciv.framework.*;
 
 import hotciv.variants.*;
@@ -13,11 +14,15 @@ public class TestDeltaCiv {
     private Game game;
     private WorldLayoutStrategy alpha_worldLayoutStrategy;
     private WorldLayoutStrategy delta_worldLayoutStrategy;
+    private BetaFactory delta;
+    private DeltaWorldLayoutStrategy deltaWorldLayoutStrategy;
+    private WorldLayoutStrategy world;
 
     /** Fixture for alphaciv testing. */
     @Before
     public void setUp() {
-        game = new GameImpl(new Strategy());
+        world = new DeltaWorldLayoutStrategy();
+
         alpha_worldLayoutStrategy =  new AlphaWorldLayoutStrategy();
         delta_worldLayoutStrategy = new DeltaWorldLayoutStrategy();
     }

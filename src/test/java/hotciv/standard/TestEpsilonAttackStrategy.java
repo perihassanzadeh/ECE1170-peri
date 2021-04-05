@@ -1,6 +1,8 @@
 package hotciv.standard;
 
 import com.sun.tools.attach.AgentInitializationException;
+import hotciv.factories.AlphaFactory;
+import hotciv.factories.EpsilonFactory;
 import hotciv.framework.*;
 
 import hotciv.variants.*;
@@ -13,9 +15,10 @@ public class TestEpsilonAttackStrategy {
     private Game game;
     private AttackStrategy epsilon_AttackStrategy;
 
+
     @Before
     public void setUp() {
-        game = new GameImpl(new Strategy());
+        game = new GameImpl(new EpsilonFactory(), new AlphaWorldLayoutStrategy());
         epsilon_AttackStrategy = new EpsilonAttackStrategy();
     }
 

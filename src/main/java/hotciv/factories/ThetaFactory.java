@@ -1,19 +1,19 @@
 package hotciv.factories;
 
-
 import hotciv.variants.*;
 
-public class EpsilonFactory implements GameFactory {
+public class ThetaFactory implements GameFactory{
+
     public AgeStrategy makeAgeStrategy() {
         return new AlphaAgeStrategy();
     }
 
     public WinnerStrategy makeWinnerStrategy() {
-        return new EpsilonWinnerStrategy();
+        return new AlphaWinnerStrategy();
     }
 
     public AttackStrategy makeAttackStrategy() {
-        return new EpsilonAttackStrategy();
+        return new ThetaAttackStrategy();
     }
 
     public UnitActionStrategy makeUnitActionStrategy() {

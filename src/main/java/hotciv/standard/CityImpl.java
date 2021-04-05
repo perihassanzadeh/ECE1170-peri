@@ -77,4 +77,9 @@ public class CityImpl implements City {
     {
         owner = own;
     }
+
+    public void setWorkforceFocus(String balance)
+    {
+        focus = balance;
+    }
 }
