@@ -2,6 +2,7 @@ package hotciv.variants;
 
 import hotciv.framework.Game;
 import hotciv.framework.Player;
+import hotciv.standard.GameImpl;
 
 public class ZetaWinnerStrategy implements WinnerStrategy{
 
@@ -18,7 +19,9 @@ public class ZetaWinnerStrategy implements WinnerStrategy{
 
     public Player getWinner(Game g) {
 
-        int round = g.getRound();
+        GameImpl theGame = (GameImpl) g;
+
+        int round = theGame.getRound();
 
         if(round < 20)
         {
