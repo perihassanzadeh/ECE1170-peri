@@ -6,6 +6,8 @@ public class GammaUnitActionStrategy implements UnitActionStrategy {
 
     public boolean getAction(Position p, Game g) {
 
+        GameImpl theGame = (GameImpl) g;
+
         if(g.getUnitAt(p)==null)
         {
             return false;
@@ -15,9 +17,10 @@ public class GammaUnitActionStrategy implements UnitActionStrategy {
 
         if(u.getTypeString() == GameConstants.SETTLER && g.getCityAt(p)==null)
         {
-            g.removeUnit(p);
+
+            theGame.removeUnit(p);
             Player play = u.getOwner();
-            g.createCity(p, play);
+            theGame.createCity(p, play);
             return true;
         }
         else if(u.getTypeString() == GameConstants.ARCHER)

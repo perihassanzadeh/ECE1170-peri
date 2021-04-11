@@ -127,7 +127,7 @@ public class GameImpl implements Game {
     if (u != null)
     {
       Tile t = getTileAt(to);
-      if (t.getValidMove()==false || (u.getTypeString()!=GameConstants.UFO))
+      if (t.getValidMove()==false)
       {
         return false;
       }
@@ -200,7 +200,7 @@ public class GameImpl implements Game {
     int column = Math.abs(to.getColumn() - from.getColumn());
     int row = Math.abs(to.getRow()-from.getRow());
 
-    int total_moves = Math.max( row, column);
+    int total_moves = Math.max(row, column);
 
     return total_moves;
   }

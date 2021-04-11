@@ -137,9 +137,4 @@ public interface Game {
    */
   public void performUnitActionAt( Position p );
 
-  public void setAgeStrategy(AgeStrategy ageStrategy);
-  public void createCity(Position p, Player owner);
-  public void removeUnit(Position p);
-  public void setTileType(Position p, Tile t);
-  public int getRound();
 }

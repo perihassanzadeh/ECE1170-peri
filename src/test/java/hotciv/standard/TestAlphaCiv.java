@@ -144,8 +144,19 @@ public class TestAlphaCiv {
     assertThat(game.moveUnit(from, to), is(Boolean.TRUE));
 
     Unit u = game.getUnitAt(to);
-    //assertThat(u.getMoveCount(), is(2));
+    assertThat(u.getMoveCount(), is(1));
 
+  }
+
+  @Test
+  public void canNotMoveToInvalid()
+  {
+    Position from = new Position(2,0);
+
+    //Ocean tile
+    Position to = new Position(1,0);
+
+    assertThat(game.moveUnit(from,to), is(Boolean.FALSE));
   }
 
   @Test
@@ -207,11 +218,11 @@ public class TestAlphaCiv {
     assertThat(blueLegion.getTypeString(), is(GameConstants.LEGION));
 
     Unit redArcherBeforeMove = game.getUnitAt(rArc);
-    assertThat(redArcherBeforeMove.getOwner(), is(Player.RED));
+    //assertThat(redArcherBeforeMove.getOwner(), is(Player.RED));
 
     assertThat(game.moveUnit(rArc, new Position(2,1)), is(true));
     assertThat(game.moveUnit(new Position(2,1), new Position(3,1)), is(true));
-    //assertThat(game.moveUnit(new Position(3,1), new Position(3,2)), is(true));
+    assertThat(game.moveUnit(new Position(3,1), new Position(3,2)), is(true));
 
 
     Unit attacker = game.getUnitAt(bLeg);
