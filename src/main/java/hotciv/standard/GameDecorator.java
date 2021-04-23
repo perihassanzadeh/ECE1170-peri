@@ -104,6 +104,16 @@ public class GameDecorator implements Game {
         theGame.performUnitActionAt(p);
     }
 
+    @Override
+    public void addObserver(GameObserver observer) {
+        
+    }
+
+    @Override
+    public void setTileFocus(Position position) {
+
+    }
+
     public String getTranscript(){
         return transcript;
     }
