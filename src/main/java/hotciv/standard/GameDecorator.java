@@ -106,7 +106,7 @@ public class GameDecorator implements Game {
 
     @Override
     public void addObserver(GameObserver observer) {
-        
+
     }
 
     @Override
