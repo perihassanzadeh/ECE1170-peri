@@ -56,15 +56,9 @@ public interface City {
    */
   public String getProduction();
 
-  public void setProduction(String u);
-
   /** return the work force's focus in this city.
    * @return a string type defining the focus, see GameConstants
    * for valid return values.
    */
   public String getWorkforceFocus();
-
-  public void setTreasury(int t);
-  public void setOwner(Player own);
-  public void setWorkforceFocus(String balance);
 }

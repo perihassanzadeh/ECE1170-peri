@@ -18,7 +18,7 @@ public class ThetaAttackStrategy implements AttackStrategy{
 
             Unit attack = g.getUnitAt(attacker);
             Player newOwner = attack.getOwner();
-            c.setOwner(newOwner);
+            ((CityImpl)c).setOwner(newOwner);
 
             return wins;
 
