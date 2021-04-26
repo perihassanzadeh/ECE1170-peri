@@ -42,7 +42,7 @@ public class ShowUpdating {
     // Try to set the selection tool instead to see
     // completely free movement of figures, including the icon
 
-    // editor.setTool( new SelectionTool(editor) );
+    //editor.setTool( new SelectionTool(editor) );
   }
 }
 
@@ -84,7 +84,16 @@ class UpdateTool extends NullTool {
       game.setTileFocus(new Position(4,3));
       break;
     }
-      // TODO: Add more state changes for other things to test
+    case 5:{
+        editor.showStatus("Unit action on city");
+        game.performUnitActionAt(new Position(4,3));
+    }
+    case 6:{
+        editor.showStatus("Show age");
+        game.endOfTurn();
+        game.endOfTurn();
+    }
+      // TODO: Add more state changes for other things to test - done
     default: {
       editor.showStatus("No more changes in my list...");
     }

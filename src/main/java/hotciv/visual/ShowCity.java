@@ -59,6 +59,7 @@ public class ShowCity {
 class ChangeCityTool extends NullTool {
   private CityStub city;
   private CityFigure cityFigure;
+
   public ChangeCityTool(CityStub c, CityFigure cf) {
     city = c;
     cityFigure = cf;

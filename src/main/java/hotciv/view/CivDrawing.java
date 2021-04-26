@@ -50,16 +50,24 @@ public class CivDrawing
   protected Drawing delegate;
   /** store all moveable figures visible in this drawing = units */
   protected Map<Unit,UnitFigure> unitFigureMap;
+  protected Map<City,CityFigure> cityFigureMap;
 
   /** the Game instance that this CivDrawing is going to render units
    * from */
   protected Game game;
+  protected DrawingEditor drawingEditor;
+
+  TextFigure moveCount = new TextFigure("", new Point(GfxConstants.UNIT_COUNT_X, GfxConstants.UNIT_COUNT_Y));
+  TextFigure ageText = new TextFigure("", new Point(GfxConstants.AGE_TEXT_X, GfxConstants.AGE_TEXT_Y));
+  ImageFigure prodFoc = new ImageFigure();
+  ImageFigure workFoc = new ImageFigure();
   
   public CivDrawing( DrawingEditor editor, Game game ) {
     super();
     this.delegate = new StandardDrawing();
     this.game = game;
     this.unitFigureMap = new HashMap<>();
+    this.drawingEditor = editor;
 
     // register this unit drawing as listener to any game state
     // changes...
@@ -69,6 +77,11 @@ public class CivDrawing
     defineUnitMap();
     // and the set of 'icons' in the status panel
     defineIcons();
+
+    delegate.add(moveCount);
+    delegate.add(workFoc);
+    delegate.add(prodFoc);
+    delegate.add(ageText);
   }
   
   /** The CivDrawing should not allow client side
@@ -98,11 +111,17 @@ public class CivDrawing
     // each unit in the game world, as well as
     // create an association between the unit and
     // the unitFigure in 'unitFigureMap'.
+    cityFigureMap = new HashMap<City, CityFigure>();
+    unitFigureMap = new HashMap<Unit,UnitFigure>();
+
     Position p;
-    for ( int r = 0; r < GameConstants.WORLDSIZE; r++ ) {
-      for ( int c = 0; c < GameConstants.WORLDSIZE; c++ ) {
+    for ( int r = 0; r < GameConstants.WORLDSIZE; r++ )
+    {
+      for ( int c = 0; c < GameConstants.WORLDSIZE; c++ )
+      {
         p = new Position(r,c);
         Unit unit = game.getUnitAt(p);
+
         if ( unit != null ) {
           String type = unit.getTypeString();
           // convert the unit's Position to (x,y) coordinates
@@ -117,6 +136,46 @@ public class CivDrawing
           // this list that is iterated by the
           // graphics rendering algorithms
           delegate.add(unitFigure);
+        }
+      }
+    }
+
+    for (int r = 0; r < GameConstants.WORLDSIZE; r++)
+    {
+      for (int c = 0; c < GameConstants.WORLDSIZE; c++)
+      {
+        p = new Position(r,c);
+        Point point = new Point(GfxConstants.getXFromColumn(c),GfxConstants.getYFromRow(r));
+        City city = game.getCityAt(p);
+
+        if (city != null)
+        {
+          CityFigure cityFigure = new CityFigure(city, point);
+          cityFigure.addFigureChangeListener(this);
+          cityFigureMap.put(city, cityFigure);
+          delegate.add(cityFigure);
+        }
+      }
+    }
+
+  }
+
+  public void defineCityMap()
+  {
+    for(int r=0; r<GameConstants.WORLDSIZE; r++)
+    {
+      for(int c=0; c<GameConstants.WORLDSIZE; c++)
+      {
+        Position position = new Position(r,c);
+        Point point = new Point(GfxConstants.getXFromColumn(c), GfxConstants.getYFromRow(r));
+        City city = game.getCityAt(position);
+
+        if(city!=null)
+        {
+          CityFigure cityFigure = new CityFigure(city,point);
+          cityFigure.addFigureChangeListener(this);
+          cityFigureMap.put(city, cityFigure);
+          delegate.add(cityFigure);
         }
       }
     }
@@ -137,8 +196,11 @@ public class CivDrawing
   }
 
   protected ImageFigure turnShieldIcon;
+  protected ImageFigure unitShieldIcon;
+  protected ImageFigure cityShieldIcon;
+
   protected void defineIcons() {
-    // TODO: Further development to include rest of figures needed
+    // TODO: Further development to include rest of figures needed- DONE
     turnShieldIcon = 
       new ImageFigure( "redshield",
                        new Point( GfxConstants.TURN_SHIELD_X,
@@ -146,35 +208,92 @@ public class CivDrawing
     // insert in delegate figure list to ensure graphical
     // rendering.
     delegate.add(turnShieldIcon);
+
+    unitShieldIcon = new ImageFigure();
+    delegate.add(unitShieldIcon);
+
+    cityShieldIcon = new ImageFigure();
+    delegate.add(cityShieldIcon);
   }
  
   // === Observer Methods ===
 
   public void worldChangedAt(Position pos) {
-    // TODO: Remove system.out debugging output
     System.out.println( "CivDrawing: world changes at "+pos);
+
     // this is a really brute-force algorithm: destroy
+    clearSelection();
+    for(Figure figs : unitFigureMap.values())
+      delegate.remove(figs);
+
     // all known units and build up the entire set again
     defineUnitMap();
 
+
     // TODO: Cities may change on position as well
+    defineCityMap();
   }
 
   public void turnEnds(Player nextPlayer, int age) {
-    // TODO: Remove system.out debugging output
-    System.out.println( "CivDrawing: turnEnds for "+
-                        nextPlayer+" at "+age );
+    // TODO: Remove system.out debugging output - done
+    //System.out.println( "CivDrawing: turnEnds for "+
+                        //nextPlayer+" at "+age );
     String playername = "red";
     if ( nextPlayer == Player.BLUE ) { playername = "blue"; }
     turnShieldIcon.set( playername+"shield",
                         new Point( GfxConstants.TURN_SHIELD_X,
                                    GfxConstants.TURN_SHIELD_Y ) );
-    // TODO: Age output pending
+    // TODO: Age output pending - done
+    ageText.setText("" + game.getAge());
+    drawingEditor.showStatus("CivDrawing: turnEnds for "+
+            nextPlayer+" at "+age );
   }
 
   public void tileFocusChangedAt(Position position) {
     // TODO: Implementation pending
     System.out.println( "Fake it: tileFocusChangedAt "+position );
+
+    Unit unit = game.getUnitAt(position);
+    City city = game.getCityAt(position);
+
+    if(unit != null)
+    {
+      prodFoc.set(GfxConstants.NOTHING, new Point(GfxConstants.CITY_PRODUCTION_X, GfxConstants.CITY_PRODUCTION_Y));
+      workFoc.set(GfxConstants.NOTHING, new Point(GfxConstants.WORKFORCEFOCUS_X,GfxConstants.WORKFORCEFOCUS_Y));
+
+      moveCount.setText("" + unit.getMoveCount());
+      String playerColor = "red";
+      if (unit.getOwner() == Player.BLUE)
+      {
+        playerColor = "blue";
+      }
+
+      unitShieldIcon.set(playerColor + "shield", new Point(GfxConstants.UNIT_SHIELD_X, GfxConstants.UNIT_SHIELD_Y));
+      cityShieldIcon.set(GfxConstants.NOTHING, new Point(GfxConstants.CITY_SHIELD_X, GfxConstants.CITY_SHIELD_Y));
+      drawingEditor.showStatus(unit.getOwner() + " " + unit.getTypeString() + " selected");
+    }
+    else if(city != null)
+    {
+      String playerColor = "red";
+      moveCount.setText("");
+      if(city.getOwner()==Player.BLUE)
+      {
+        playerColor="blue";
+      }
+      prodFoc.set(city.getProduction(), new Point(GfxConstants.CITY_PRODUCTION_X, GfxConstants.CITY_PRODUCTION_Y));
+      workFoc.set(city.getWorkforceFocus(), new Point(GfxConstants.WORKFORCEFOCUS_X, GfxConstants.WORKFORCEFOCUS_Y));
+      cityShieldIcon.set(playerColor + "shield", new Point(GfxConstants.CITY_SHIELD_X, GfxConstants.CITY_SHIELD_Y));
+      unitShieldIcon.set(GfxConstants.NOTHING, new Point(GfxConstants.UNIT_SHIELD_X, GfxConstants.UNIT_SHIELD_Y));
+      drawingEditor.showStatus(city.getOwner().name() + " city selected");
+    }
+    else
+    {
+      moveCount.setText("");
+      prodFoc.set(GfxConstants.NOTHING, new Point(GfxConstants.CITY_PRODUCTION_X, GfxConstants.CITY_PRODUCTION_Y));
+      workFoc.set(GfxConstants.NOTHING, new Point(GfxConstants.WORKFORCEFOCUS_X, GfxConstants.WORKFORCEFOCUS_Y));
+      cityShieldIcon.set(GfxConstants.NOTHING, new Point(GfxConstants.CITY_SHIELD_X, GfxConstants.CITY_SHIELD_Y));
+      unitShieldIcon.set(GfxConstants.NOTHING, new Point(GfxConstants.UNIT_SHIELD_X, GfxConstants.UNIT_SHIELD_Y));
+    }
   }
 
   @Override
@@ -184,7 +303,8 @@ public class CivDrawing
     // entire Drawing.
     defineUnitMap();
     defineIcons();
-    // TODO: Cities pending
+    // TODO: Cities pending - done
+    defineCityMap();
   }
 
   @Override

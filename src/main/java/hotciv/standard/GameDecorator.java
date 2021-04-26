@@ -114,6 +114,11 @@ public class GameDecorator implements Game {
 
     }
 
+    @Override
+    public void worldChangedAt(Position pos) {
+
+    }
+
     public String getTranscript(){
         return transcript;
     }

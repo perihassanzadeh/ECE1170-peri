@@ -5,6 +5,7 @@ import hotciv.factories.GameFactory;
 import hotciv.framework.*;
 import hotciv.standard.*;
 import hotciv.variants.*;
+import hotciv.framework.GameObserver;
 
 import java.util.HashMap;
 
@@ -45,6 +46,7 @@ public class GameImpl implements Game {
   HashMap<Position, Unit> unitTiles = new HashMap<>();
   HashMap<Position, City> cityTiles = new HashMap<>();
   private List<Battle> battles;
+  private List<GameObserver> observers;
   private AgeStrategy ageStrategy;
   private WinnerStrategy winnerStrategy;
   private UnitActionStrategy unitActionStrategy;
@@ -57,6 +59,7 @@ public class GameImpl implements Game {
     age = -4000;
     round = 0;
     battles = new ArrayList<Battle>();
+    observers = new ArrayList<GameObserver>();
     this.ageStrategy = factory.makeAgeStrategy();
     this.winnerStrategy = factory.makeWinnerStrategy();
     this.unitActionStrategy = factory.makeUnitActionStrategy();
@@ -191,12 +194,13 @@ public class GameImpl implements Game {
         }
 
       }
+      worldChangedAt(from);
+      worldChangedAt(to);
       return true;
     }
     else {
       return false;
     }
-
   }
 
   private int calcMoveCount(Position to, Position from)
@@ -220,6 +224,7 @@ public class GameImpl implements Game {
     if(redTurn==false)
     {
       age = ageStrategy.calcNextWorldAge(age);
+      //reset();
       round = round+1;
       int size = cityTiles.size();
 
@@ -249,18 +254,20 @@ public class GameImpl implements Game {
     {
       redTurn = true;
     }
-
+    turnEnds(getPlayerInTurn(), age);
   }
 
   public void changeWorkForceFocusInCityAt( Position p, String balance )
   {
     ((CityImpl)this.getCityAt(p)).setWorkforceFocus(balance);
+    worldChangedAt(p);
   }
 
   public void changeProductionInCityAt( Position position, String unitType )
   {
     City city = cityTiles.get(position);
     ((CityImpl)city).setProduction(unitType);
+    worldChangedAt(position);
   }
 
   public void performUnitActionAt( Position position )
@@ -268,6 +275,28 @@ public class GameImpl implements Game {
     boolean action;
 
     action = unitActionStrategy.getAction(position, this);
+
+    worldChangedAt(position);
+
+  }
+
+  public void reset()
+  {
+    for(int i=0; i<GameConstants.WORLDSIZE; i++)
+    {
+      for(int j=0; j<GameConstants.WORLDSIZE; j++)
+      {
+        Position p = new Position(i,j);
+        Unit u = unitTiles.get(p);
+
+        if(u != null)
+        {
+          ((UnitImpl)u).setMovecount(1);
+          unitTiles.put(p, u);
+          worldChangedAt(p);
+        }
+      }
+    }
   }
 
   public void createCity(Position position, Player owner)
@@ -324,12 +353,32 @@ public class GameImpl implements Game {
 
   public void addObserver(GameObserver observer)
   {
-    //implement
+    observers.add(observer);
   }
 
   public void setTileFocus(Position position)
   {
-    //implement
+    for(GameObserver obs : observers)
+    {
+      obs.tileFocusChangedAt(position);
+    }
   }
+
+  public void worldChangedAt(Position pos)
+  {
+    for (GameObserver obs: observers)
+    {
+      obs.worldChangedAt(pos);
+    }
+  }
+
+  private void turnEnds(Player nextPlayer, int age)
+  {
+    for( GameObserver obs: observers )
+    {
+      obs.turnEnds(nextPlayer, age);
+    }
+  }
+
 }
 

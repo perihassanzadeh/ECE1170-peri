@@ -1,6 +1,7 @@
 package hotciv.standard;
 
 import com.sun.tools.attach.AgentInitializationException;
+import hotciv.factories.AlphaFactory;
 import hotciv.factories.BetaFactory;
 import hotciv.framework.*;
 
@@ -12,57 +13,49 @@ import java.util.*;
 
 public class TestDeltaCiv {
     private Game game;
-    private WorldLayoutStrategy alpha_worldLayoutStrategy;
-    private WorldLayoutStrategy delta_worldLayoutStrategy;
-    private BetaFactory delta;
     private DeltaWorldLayoutStrategy deltaWorldLayoutStrategy;
     private WorldLayoutStrategy world;
 
     /** Fixture for alphaciv testing. */
     @Before
     public void setUp() {
+        game = new GameImpl(new AlphaFactory(), new DeltaWorldLayoutStrategy());
         world = new DeltaWorldLayoutStrategy();
-
-        alpha_worldLayoutStrategy =  new AlphaWorldLayoutStrategy();
-        delta_worldLayoutStrategy = new DeltaWorldLayoutStrategy();
     }
 
     @Test
     public void checkTileImplementation()
     {
-        /*
-        HashMap<Position, Tile> boardTiles = new HashMap<Position, Tile>();
-        boardTiles = delta_worldLayoutStrategy.createLayout(game);
+        world.createLayout(game);
 
         //Ocean Tile
         Position ocean = new Position(0,0);
         Tile oceantile = game.getTileAt(ocean);
-
-        assertThat(boardTiles.get(oceantile), is(GameConstants.OCEANS));
+        assertThat(oceantile.getTypeString(), is(GameConstants.OCEANS));
 
         //Plains Tile
         Position plains = new Position(0,4);
         Tile plainstile = game.getTileAt(plains);
 
-        assertThat(boardTiles.get(plainstile), is(GameConstants.PLAINS));
+        assertThat(plainstile.getTypeString(), is(GameConstants.PLAINS));
 
         //Mountains Tile
-        Position mountain = new Position(3,7);
+        Position mountain = new Position(0,5);
         Tile mountaintile = game.getTileAt(mountain);
 
-        assertThat(boardTiles.get(mountaintile), is(GameConstants.MOUNTAINS));
+        assertThat(mountaintile.getTypeString(), is(GameConstants.MOUNTAINS));
 
         //Forest Tile
-        Position forest = new Position(2,10);
+        Position forest = new Position(1,9);
         Tile foresttile = game.getTileAt(forest);
 
-        assertThat(boardTiles.get(foresttile), is(GameConstants.FOREST));
+        assertThat(foresttile.getTypeString(), is(GameConstants.FOREST));
 
         //Hills Tile
-        Position hills = new Position(15,5);
+        Position hills = new Position(1,3);
         Tile hillstile = game.getTileAt(hills);
 
-        assertThat(boardTiles.get(hillstile), is(GameConstants.HILLS));
-         */
+        assertThat(hillstile.getTypeString(), is(GameConstants.HILLS));
+
     }
 }

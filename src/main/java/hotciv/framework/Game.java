@@ -153,4 +153,8 @@ public interface Game {
    * has focus.
    */
   public void setTileFocus(Position position);
+
+  public void worldChangedAt(Position pos);
+
+  //public void turnEnds(Player nextPlayer, int age);
 }
