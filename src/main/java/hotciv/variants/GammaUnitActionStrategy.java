@@ -25,7 +25,7 @@ public class GammaUnitActionStrategy implements UnitActionStrategy {
         }
         else if(u.getTypeString() == GameConstants.ARCHER)
         {
-            u.fortifyUnit();
+            ((UnitImpl)g.getUnitAt(p)).fortifyUnit();
             return true;
         }
 

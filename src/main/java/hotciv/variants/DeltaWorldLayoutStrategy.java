@@ -1,9 +1,7 @@
 package hotciv.variants;
 
 import hotciv.framework.*;
-import hotciv.standard.CityImpl;
-import hotciv.standard.TileImpl;
-import hotciv.standard.UnitImpl;
+import hotciv.standard.*;
 
 import java.util.HashMap;
 
@@ -78,18 +76,21 @@ public class DeltaWorldLayoutStrategy implements WorldLayoutStrategy{
         Position rArc = new Position(2,0);
         UnitImpl redArcher = new UnitImpl();
         redArcher.UnitImpl(rArc, GameConstants.ARCHER);
+        redArcher.setOwner(Player.RED);
         units.put(rArc, redArcher);
 
         //Blue Legion
         Position bLeg = new Position(3,2);
         UnitImpl blueLegion = new UnitImpl();
         blueLegion.UnitImpl(bLeg, GameConstants.LEGION);
+        blueLegion.setOwner(Player.BLUE);
         units.put(bLeg, blueLegion);
 
         //Red Settler
         Position rSet = new Position(4,3);
         UnitImpl redSettler = new UnitImpl();
         redSettler.UnitImpl(rSet, GameConstants.SETTLER);
+        redSettler.setOwner(Player.RED);
         units.put(rSet, redSettler);
 
         return units;

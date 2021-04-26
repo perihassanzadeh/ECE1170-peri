@@ -47,9 +47,9 @@ public class TestBetaCiv {
     }
 
     @Test
-    public void betaWinner()
+    public void testBetaWin()
     {
-        //Test for when beta winner implemented
+
     }
 
 }

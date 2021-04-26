@@ -19,10 +19,6 @@ public class BetaFactory implements GameFactory{
         return new AlphaUnitActionStrategy();
     }
 
-    public WorldLayoutStrategy makeWorldLayoutStrategy(){
-        return new AlphaWorldLayoutStrategy();
-    }
-
     @Override
     public PopulationStrategy makePopulationStrategy() {
         return new AlphaPopulationStrategy();

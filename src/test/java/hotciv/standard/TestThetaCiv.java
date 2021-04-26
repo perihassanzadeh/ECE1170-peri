@@ -37,7 +37,7 @@ public class TestThetaCiv {
         Position redCity = new Position(1,1);
         City red = game.getCityAt(redCity);
 
-        red.setProduction(GameConstants.UFO);
+        ((CityImpl)red).setProduction(GameConstants.UFO);
 
         assertThat(red.getProduction(), is(GameConstants.UFO));
 

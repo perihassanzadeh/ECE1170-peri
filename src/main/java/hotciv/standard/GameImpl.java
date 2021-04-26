@@ -5,6 +5,7 @@ import hotciv.factories.GameFactory;
 import hotciv.framework.*;
 import hotciv.standard.*;
 import hotciv.variants.*;
+import hotciv.framework.GameObserver;
 
 import java.util.HashMap;
 
@@ -45,6 +46,7 @@ public class GameImpl implements Game {
   HashMap<Position, Unit> unitTiles = new HashMap<>();
   HashMap<Position, City> cityTiles = new HashMap<>();
   private List<Battle> battles;
+  private List<GameObserver> observers;
   private AgeStrategy ageStrategy;
   private WinnerStrategy winnerStrategy;
   private UnitActionStrategy unitActionStrategy;
@@ -57,6 +59,7 @@ public class GameImpl implements Game {
     age = -4000;
     round = 0;
     battles = new ArrayList<Battle>();
+    observers = new ArrayList<GameObserver>();
     this.ageStrategy = factory.makeAgeStrategy();
     this.winnerStrategy = factory.makeWinnerStrategy();
     this.unitActionStrategy = factory.makeUnitActionStrategy();
@@ -122,12 +125,14 @@ public class GameImpl implements Game {
 
   public boolean moveUnit(Position from, Position to)
   {
-    Unit u = getUnitAt(from);
+    //Unit u = getUnitAt(from);
+    Unit u = ((UnitImpl)this.getUnitAt(from));
 
     if (u != null)
     {
       Tile t = getTileAt(to);
-      if (t.getValidMove()==false)
+      Boolean val = ((TileImpl)this.getTileAt(to)).getValidMove();
+      if (val==false)
       {
         return false;
       }
@@ -161,7 +166,8 @@ public class GameImpl implements Game {
             if(getCityAt(to) != null)
             {
               City c = new CityImpl();
-              c.setOwner(u.getOwner());
+              ((CityImpl)c).setOwner(u.getOwner());
+
               cityTiles.put(to, c);
             }
           }
@@ -169,7 +175,7 @@ public class GameImpl implements Game {
           Player attacker = getUnitAt(from).getOwner();
           Battle battle = new Battle(attacker, false, round);
           battles.add(battle);
-          u.setMovecount(0);
+          ((UnitImpl)this.getUnitAt(from)).setMovecount(0);
 
           unitTiles.remove(from);
 
@@ -181,18 +187,20 @@ public class GameImpl implements Game {
 
         if(getCityAt(to) != null){
           Player own = u.getOwner();
-          City c = new CityImpl();
-          c.setOwner(own);
-          cityTiles.put(to, c);
+          City city = new CityImpl();
+          ((CityImpl)city).setOwner(own);
+
+          cityTiles.put(to, city);
         }
 
       }
+      worldChangedAt(from);
+      worldChangedAt(to);
       return true;
     }
     else {
       return false;
     }
-
   }
 
   private int calcMoveCount(Position to, Position from)
@@ -216,6 +224,7 @@ public class GameImpl implements Game {
     if(redTurn==false)
     {
       age = ageStrategy.calcNextWorldAge(age);
+      //reset();
       round = round+1;
       int size = cityTiles.size();
 
@@ -227,10 +236,10 @@ public class GameImpl implements Game {
           City city = new CityImpl();
           city = cityTiles.get(position);
 
-          if(city != null)
+          if(cityTiles.get(position) != null)
           {
             int current = city.getTreasury();
-            city.setTreasury(current + 6);
+            ((CityImpl)city).setTreasury(current+6);
           }
         }
       }
@@ -245,19 +254,20 @@ public class GameImpl implements Game {
     {
       redTurn = true;
     }
-
+    turnEnds(getPlayerInTurn(), age);
   }
 
   public void changeWorkForceFocusInCityAt( Position p, String balance )
   {
-    City c = getCityAt(p);
-    c.setWorkforceFocus(balance);
+    ((CityImpl)this.getCityAt(p)).setWorkforceFocus(balance);
+    worldChangedAt(p);
   }
 
   public void changeProductionInCityAt( Position position, String unitType )
   {
     City city = cityTiles.get(position);
-    city.setProduction(unitType);
+    ((CityImpl)city).setProduction(unitType);
+    worldChangedAt(position);
   }
 
   public void performUnitActionAt( Position position )
@@ -265,12 +275,35 @@ public class GameImpl implements Game {
     boolean action;
 
     action = unitActionStrategy.getAction(position, this);
+
+    worldChangedAt(position);
+
+  }
+
+  public void reset()
+  {
+    for(int i=0; i<GameConstants.WORLDSIZE; i++)
+    {
+      for(int j=0; j<GameConstants.WORLDSIZE; j++)
+      {
+        Position p = new Position(i,j);
+        Unit u = unitTiles.get(p);
+
+        if(u != null)
+        {
+          ((UnitImpl)u).setMovecount(1);
+          unitTiles.put(p, u);
+          worldChangedAt(p);
+        }
+      }
+    }
   }
 
   public void createCity(Position position, Player owner)
   {
     City city = new CityImpl();
-    city.setOwner(owner);
+    ((CityImpl)city).setOwner(owner);
+
     cityTiles.put(position, city);
 
   }
@@ -315,6 +348,35 @@ public class GameImpl implements Game {
     else
     {
       return -1;
+    }
+  }
+
+  public void addObserver(GameObserver observer)
+  {
+    observers.add(observer);
+  }
+
+  public void setTileFocus(Position position)
+  {
+    for(GameObserver obs : observers)
+    {
+      obs.tileFocusChangedAt(position);
+    }
+  }
+
+  public void worldChangedAt(Position pos)
+  {
+    for (GameObserver obs: observers)
+    {
+      obs.worldChangedAt(pos);
+    }
+  }
+
+  private void turnEnds(Player nextPlayer, int age)
+  {
+    for( GameObserver obs: observers )
+    {
+      obs.turnEnds(nextPlayer, age);
     }
   }
 

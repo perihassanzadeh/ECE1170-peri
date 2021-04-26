@@ -38,8 +38,4 @@ public interface Tile {
    * @return the type type as string
    */
   public String getTypeString();
-
-  public Boolean getValidMove();
-
-  public void setMoves();
 }
